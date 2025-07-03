@@ -29,16 +29,35 @@ export function renderBookList(bookList, books, onBookClick) {
 
 export function showDescription(bookDescription, description) {
     bookDescription.innerHTML = `
-        <div><h3>Descrizione</h3>
-        <p>${description}</p></div>
+        <div class="desc-text">
+            <h3>Descrizione</h3>
+            <p>${description}</p>
+        </div>
+        <div class="desc-cover"></div>
     `;
     bookDescription.style.display = 'flex';
+    bookDescription.style.flexDirection = 'column';
+
+    // Mobile: sposta la descrizione sotto il libro selezionato
+    if (window.innerWidth <= 900) {
+        const selected = document.querySelector('.book-item.selected');
+        if (selected && selected.parentNode) {
+            selected.parentNode.insertBefore(bookDescription, selected.nextSibling);
+        }
+    } else {
+        const container = document.querySelector('.container');
+        if (container && !container.contains(bookDescription)) {
+            container.appendChild(bookDescription);
+        }
+    }
 }
 
 export function showCover(bookDescription, coverId) {
-    if (coverId) {
-        const coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`;
-        const imgHtml = `<img src="${coverUrl}" alt="Copertina libro" class="book-cover" style="max-width:50%;display:block;margin:1em 0 1em 1em;">`;
-        bookDescription.innerHTML += imgHtml;
+    const coverDiv = bookDescription.querySelector('.desc-cover');
+    if (coverDiv) {
+        coverDiv.innerHTML = coverId
+            ? `<img src="https://covers.openlibrary.org/b/id/${coverId}-L.jpg" alt="Copertina libro" class="book-cover">`
+            : '';
     }
 }
+

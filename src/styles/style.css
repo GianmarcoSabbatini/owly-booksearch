@@ -143,6 +143,9 @@ input[type="text"] {
 }
 
 #bookDescription {
+  display: none;
+  flex-direction: column;
+  gap: 1.5em;
   min-width: 260px;
   max-width: 100%;
   margin-top: 10px;
@@ -151,13 +154,23 @@ input[type="text"] {
   padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  display: none;
   color: var(--text);
 }
 
 #bookDescription h3 {
   color: var(--primary-dark);
   margin-bottom: 10px;
+}
+
+.desc-text {
+  margin-bottom: 0.5em;
+}
+
+.desc-cover {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  margin-top: 1em;
 }
 
 .book-cover {
@@ -188,5 +201,15 @@ input[type="text"] {
     width: 100%;
     min-width: 0;
     margin: 0 auto 24px auto;
+    box-sizing: border-box;
+    overflow-x: auto;
+    word-break: break-word;
+  }
+  .book-item, #bookDescription {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: auto;
+    word-break: break-word;
   }
 }

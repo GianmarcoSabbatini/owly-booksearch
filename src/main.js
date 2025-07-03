@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookList = document.getElementById('bookList');
     const bookDescription = document.getElementById('bookDescription');
 
-    // Gestore click sul pulsante di ricerca
     searchBtn.addEventListener('click', async () => {
         const query = categoryInput.value.trim();
         resetResults(bookList, bookDescription);
@@ -30,12 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // Prova la ricerca per categoria, ma gestisci eventuali errori di rete
             let books = [];
             try {
                 books = await fetchBooksByCategory(query.toLowerCase());
             } catch {
-                // Se la fetch fallisce (es. errore CORS), ignora e passa alla ricerca per titolo
                 books = [];
             }
 
@@ -44,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Se non trova nulla o errore, prova la ricerca per titolo
             books = await fetchBooksByTitle(query);
             if (books.length > 0) {
                 renderBookList(bookList, books, showBookDescription);
@@ -57,14 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Permetti la ricerca anche premendo INVIO nell'input
     categoryInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             searchBtn.click();
         }
     });
 
-    // Mostra descrizione e copertina del libro
     async function showBookDescription(workKey) {
         try {
             const description = await fetchDescription(workKey);
@@ -78,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const coverId = await fetchCoverId(workKey);
             showCover(bookDescription, coverId);
         } catch {
-            // Nessuna azione se la copertina non è disponibile
         }
     }
 });
