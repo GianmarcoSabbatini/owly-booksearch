@@ -67,8 +67,8 @@ owly-booksearch/
 
 ## Autore
 
-Gianmarco
+Gianmarco Sabbatini aka TrisErmete
 
 ---
 
-**Progetto realizzato per
+**Progetto realizzato per scopi didattici
