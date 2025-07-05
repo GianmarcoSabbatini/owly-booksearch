@@ -69,7 +69,7 @@ owly-booksearch/
 
 ## Autore
 
-Gianmarco Sabbatini aka TrisErmete
+Gianmarco Sabbatini
 
 ---
 
