@@ -35,7 +35,7 @@ owly-booksearch/
 
 1. **Clona il repository**  
    ```
-   git clone <repo-url>
+   git clone <[repo-url](https://github.com/GianmarcoSabbatini/owly-booksearch/)>
    cd owly-booksearch
    ```
 
@@ -50,7 +50,9 @@ owly-booksearch/
    ```
 
 4. **Avvia l’applicazione**  
-   Apri `dist/index.html` con il browser.
+    ```
+   npm start
+    ```
 
 ## Dipendenze principali
 
