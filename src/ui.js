@@ -1,63 +1,86 @@
-export function resetResults(bookList, bookDescription) {
+export function resetResults(bookList, descLibro) {
     bookList.innerHTML = '';
-    bookDescription.innerHTML = '';
-    bookDescription.style.display = 'none';
+    descLibro.innerHTML = '';
+    descLibro.style.display = 'none';
 }
 
 export function showInfo(bookList, message) {
     bookList.innerHTML = `<div class="info-box">${message}</div>`;
 }
 
-export function renderBookList(bookList, books, onBookClick) {
+export function mostraDescrizione(descLibro, htmlDescrizione) {
+    descLibro.innerHTML = htmlDescrizione;
+    descLibro.style.display = 'flex';
+}
+
+export function renderLibriConPaginazione(
+    books,
+    clickLibro,
+    numeroPagina,
+    paginaSeguente,
+    selectedKey = null,
+    htmlDescrizione = ''
+) {
+    const bookList = document.getElementById('bookList');
     bookList.innerHTML = '';
+
+    const list = document.createElement('div');
+    list.className = 'book-list';
+
     books.forEach(book => {
-        const item = document.createElement('div');
-        item.className = 'book-item';
-        item.innerHTML = `
-            <h4>${book.title}</h4>
-            <br>
-            <h5>Autori: ${book.authors.map(a => a.name).join(', ')}</h5>
+        const div = document.createElement('div');
+        div.className = 'book-item';
+        if (book.key === selectedKey) div.classList.add('selected');
+        div.setAttribute('tabindex', '0');
+        div.setAttribute('role', 'button');
+        div.setAttribute('aria-pressed', book.key === selectedKey ? 'true' : 'false');
+        div.setAttribute('aria-label', `Apri dettagli di ${book.title}`);
+        div.innerHTML = `
+            <strong>${book.title}</strong>
+            <div class="book-authors">
+                ${book.authors && book.authors.length === 1 ? 'Autore: ' : 'Autori: '}
+                ${(book.authors || []).map(a => a.name).join(', ')}
+            </div>
         `;
-        item.addEventListener('click', () => {
-            document.querySelectorAll('.book-item').forEach(el => el.classList.remove('selected'));
-            item.classList.add('selected');
-            onBookClick(book.key);
+        div.addEventListener('click', () => clickLibro(book, books));
+        div.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') clickLibro(book, books);
         });
-        bookList.appendChild(item);
+        list.appendChild(div);
+
+        // in mobile descrizione appena sotto il libro
+        if (book.key === selectedKey) {
+            const descDiv = document.createElement('div');
+            descDiv.className = 'mobile-description';
+            descDiv.innerHTML = htmlDescrizione;
+            list.appendChild(descDiv);
+        }
     });
-}
+    bookList.appendChild(list);
 
-export function showDescription(bookDescription, description) {
-    bookDescription.innerHTML = `
-        <div class="desc-text">
-            <h3>Descrizione</h3>
-            <p>${description}</p>
-        </div>
-        <div class="desc-cover"></div>
-    `;
-    bookDescription.style.display = 'flex';
-    bookDescription.style.flexDirection = 'column';
-
-    // Mobile: sposta la descrizione sotto il libro selezionato
-    if (window.innerWidth <= 900) {
-        const selected = document.querySelector('.book-item.selected');
-        if (selected && selected.parentNode) {
-            selected.parentNode.insertBefore(bookDescription, selected.nextSibling);
-        }
-    } else {
-        const container = document.querySelector('.container');
-        if (container && !container.contains(bookDescription)) {
-            container.appendChild(bookDescription);
-        }
+    // pagoinazione
+    const paginazione = document.createElement('nav');
+    paginazione.className = 'paginazione';
+    paginazione.setAttribute('aria-label', 'Navigazione pagine');
+    if (numeroPagina > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'paginazione-btn';
+        prevBtn.dataset.page = numeroPagina - 1;
+        prevBtn.textContent = 'Precedente';
+        prevBtn.setAttribute('aria-label', 'Pagina precedente');
+        paginazione.appendChild(prevBtn);
     }
-}
-
-export function showCover(bookDescription, coverId) {
-    const coverDiv = bookDescription.querySelector('.desc-cover');
-    if (coverDiv) {
-        coverDiv.innerHTML = coverId
-            ? `<img src="https://covers.openlibrary.org/b/id/${coverId}-L.jpg" alt="Copertina libro" class="book-cover">`
-            : '';
+    const pageSpan = document.createElement('span');
+    pageSpan.textContent = ` Pagina ${numeroPagina} `;
+    paginazione.appendChild(pageSpan);
+    if (paginaSeguente) {
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'paginazione-btn';
+        nextBtn.dataset.page = numeroPagina + 1;
+        nextBtn.textContent = 'Successiva';
+        nextBtn.setAttribute('aria-label', 'Pagina successiva');
+        paginazione.appendChild(nextBtn);
     }
+    bookList.appendChild(paginazione);
 }
 

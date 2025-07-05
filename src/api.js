@@ -1,37 +1,17 @@
 import axios from 'axios';
-import get from 'lodash/get';
 
-const API_BASE_URL = process.env.API_BASE_URL || 'https://openlibrary.org';
+const API_BASE_URL = 'https://openlibrary.org';
 
-// Fetch libri per categoria
-export async function fetchBooksByCategory(category) {
-    const url = `${API_BASE_URL}/subjects/${category}.json`;
+export async function fetchLibriPerCategoria(category, limit = 12, offset = 0) {
+    const url = `${API_BASE_URL}/subjects/${encodeURIComponent(category)}.json?limit=${limit}&offset=${offset}`;
     const response = await axios.get(url);
-    return get(response, 'data.works', []);
+    return response.data.works || [];
 }
 
-// Fetch libri per titolo
-export async function fetchBooksByTitle(title) {
-    const url = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}`;
+export async function fetchDescrizione(workKey) {
+    const url = `${API_BASE_URL}${workKey}.json`;
     const response = await axios.get(url);
-    return get(response, 'data.docs', []).map(doc => ({
-        title: doc.title,
-        authors: (doc.author_name || []).map(name => ({ name })),
-        key: doc.key
-    }));
-}
-
-// Fetch descrizione libro
-export async function fetchDescription(workKey) {
-    const url = `https://openlibrary.org${workKey}.json`;
-    const response = await axios.get(url);
-    const desc = get(response.data, 'description', 'Nessuna descrizione disponibile');
+    const desc = response.data.description;
+    if (!desc) return '';
     return typeof desc === 'string' ? desc : desc.value;
-}
-
-// Fetch copertina libro
-export async function fetchCoverId(workKey) {
-    const url = `https://openlibrary.org${workKey}.json`;
-    const response = await axios.get(url);
-    return get(response.data, 'covers[0]', null);
 }

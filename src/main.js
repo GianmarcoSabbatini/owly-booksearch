@@ -1,56 +1,67 @@
 import './styles/style.css';
 import {
-    fetchBooksByCategory,
-    fetchBooksByTitle,
-    fetchDescription,
-    fetchCoverId
+    fetchLibriPerCategoria,
+    fetchDescrizione
 } from './api';
 import {
-    resetResults,
-    showInfo,
-    renderBookList,
-    showDescription,
-    showCover
+    renderLibriConPaginazione,
+    mostraDescrizione
 } from './ui';
+
+let numeroPagina = 1;
+let categoriaScelta = '';
+const libriPerPagina = 6; // non so se 6 o 12
 
 document.addEventListener('DOMContentLoaded', () => {
     const categoryInput = document.getElementById('categoryInput');
     const searchBtn = document.getElementById('searchBtn');
-    const bookList = document.getElementById('bookList');
-    const bookDescription = document.getElementById('bookDescription');
+    const descLibro = document.getElementById('descLibro');
 
-    searchBtn.addEventListener('click', async () => {
-        const query = categoryInput.value.trim();
-        resetResults(bookList, bookDescription);
+    let keyLibroSelezionato = null;
+    let descrizioneLibroSelezionato = '';
 
-        if (!query) {
-            showInfo(bookList, 'Inserisci una categoria o un titolo');
-            return;
-        }
+    function clickLibro(book, books) {
+        fetchDescrizione(book.key).then(description => {
+            keyLibroSelezionato = book.key;
+            descrizioneLibroSelezionato = `
+                <h3>DESCRIZIONE</h3>
+                <div class="desc-text">${description || 'Nessuna descrizione disponibile.'}</div>
+                <div class="desc-cover">
+                    ${book.cover_id ? `<img src="https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg" alt="Copertina libro" class="book-cover">` : ''}
+                </div>
+            `;
+            renderLibriConPaginazione(
+                books,
+                clickLibro,
+                numeroPagina,
+                books.length === libriPerPagina,
+                keyLibroSelezionato,
+                descrizioneLibroSelezionato
+            );
+            mostraDescrizione(descLibro, descrizioneLibroSelezionato);
+        });
+    }
 
-        try {
-            let books = [];
-            try {
-                books = await fetchBooksByCategory(query.toLowerCase());
-            } catch {
-                books = [];
-            }
+    function loadBooks() {
+        const offset = (numeroPagina - 1) * libriPerPagina;
+        fetchLibriPerCategoria(categoriaScelta, libriPerPagina, offset).then(books => {
+            renderLibriConPaginazione(
+                books,
+                clickLibro,
+                numeroPagina,
+                books.length === libriPerPagina,
+                keyLibroSelezionato,
+                descrizioneLibroSelezionato
+            );
+        });
+    }
 
-            if (books.length > 0) {
-                renderBookList(bookList, books, showBookDescription);
-                return;
-            }
-
-            books = await fetchBooksByTitle(query);
-            if (books.length > 0) {
-                renderBookList(bookList, books, showBookDescription);
-                return;
-            }
-
-            showInfo(bookList, 'Nessun libro trovato');
-        } catch (err) {
-            showInfo(bookList, `Errore nella ricerca: ${err.message}`);
-        }
+    searchBtn.addEventListener('click', () => {
+        categoriaScelta = categoryInput.value.trim();
+        numeroPagina = 1;
+        keyLibroSelezionato = null;
+        descrizioneLibroSelezionato = '';
+        loadBooks();
     });
 
     categoryInput.addEventListener('keydown', (event) => {
@@ -59,20 +70,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function showBookDescription(workKey) {
-        try {
-            const description = await fetchDescription(workKey);
-            showDescription(bookDescription, description);
-        } catch {
-            showInfo(bookDescription, 'Errore nel caricamento della descrizione.');
-            bookDescription.style.display = 'flex';
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('paginazione-btn')) {
+            const page = parseInt(e.target.dataset.page, 10);
+            if (!isNaN(page)) {
+                numeroPagina = page;
+                keyLibroSelezionato = null;
+                descrizioneLibroSelezionato = '';
+                loadBooks();
+            }
         }
-
-        try {
-            const coverId = await fetchCoverId(workKey);
-            showCover(bookDescription, coverId);
-        } catch {
-        }
-    }
+    });
 });
 
