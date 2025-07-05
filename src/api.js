@@ -1,9 +1,11 @@
 import axios from 'axios';
 import get from 'lodash/get';
 
+const API_BASE_URL = process.env.API_BASE_URL || 'https://openlibrary.org';
+
 // Fetch libri per categoria
 export async function fetchBooksByCategory(category) {
-    const url = `https://openlibrary.org/subjects/${category}.json`;
+    const url = `${API_BASE_URL}/subjects/${category}.json`;
     const response = await axios.get(url);
     return get(response, 'data.works', []);
 }
