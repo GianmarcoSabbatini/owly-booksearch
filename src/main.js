@@ -70,6 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    categoryInput.addEventListener('touchend', (event) => {
+    event.preventDefault(); // Previene il doppio evento
+    searchBtn.click();
+});
+
+
+
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('paginazione-btn')) {
             const page = parseInt(e.target.dataset.page, 10);
