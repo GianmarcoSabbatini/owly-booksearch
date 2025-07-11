@@ -49,18 +49,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 books,
                 clickLibro,
                 numeroPagina,
-                books.length === libriPerPagina,
-                keyLibroSelezionato,
-                descrizioneLibroSelezionato
             );
         });
     }
 
     searchBtn.addEventListener('click', () => {
-        categoriaScelta = categoryInput.value.trim();
+        const searchTerm = categoryInput.value.trim();
+        const messaggioErrore = document.getElementById('messaggioErrore');
+
+        if (!searchTerm) {
+            messaggioErrore.textContent = 'Ehi! Non hai scritto nulla nel box di ricerca!';
+            messaggioErrore.style.display = 'block';
+
+            categoryInput.classList.add('shake');
+            setTimeout(() => {
+                categoryInput.classList.remove('shake');
+            }, 500);
+            return;
+        }
+
+        messaggioErrore.style.display = 'none';
+        categoriaScelta = searchTerm;
         numeroPagina = 1;
-        keyLibroSelezionato = null;
-        descrizioneLibroSelezionato = '';
         loadBooks();
     });
 
