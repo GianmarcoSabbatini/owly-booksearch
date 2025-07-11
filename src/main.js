@@ -20,26 +20,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let keyLibroSelezionato = null;
     let descrizioneLibroSelezionato = '';
 
-    function clickLibro(book, books) {
+    function fetchAndRenderDescrizione(book, books) {
         fetchDescrizione(book.key).then(description => {
-            keyLibroSelezionato = book.key;
-            descrizioneLibroSelezionato = `
-                <h3>DESCRIZIONE</h3>
-                <div class="desc-text">${description || 'Nessuna descrizione disponibile.'}</div>
-                <div class="desc-cover">
-                    ${book.cover_id ? `<img src="https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg" alt="Copertina libro" class="book-cover">` : ''}
-                </div>
-            `;
+            const descrizione = formatDescrizione(book, description);
             renderLibriConPaginazione(
                 books,
                 clickLibro,
                 numeroPagina,
                 books.length === libriPerPagina,
-                keyLibroSelezionato,
-                descrizioneLibroSelezionato
+                book.key,
+                descrizione
             );
-            mostraDescrizione(descLibro, descrizioneLibroSelezionato);
+            mostraDescrizione(descLibro, descrizione);
         });
+    }
+
+    function formatDescrizione(book, description) {
+        return `
+            <h3>DESCRIZIONE</h3>
+            <div class="desc-text">${description || 'Nessuna descrizione disponibile.'}</div>
+            <div class="desc-cover">
+                ${book.cover_id ? `<img src="https://covers.openlibrary.org/b/id/${book.cover_id}-L.jpg" alt="Copertina libro" class="book-cover">` : ''}
+            </div>
+        `;
+    }
+
+    function clickLibro(book, books) {
+        fetchAndRenderDescrizione(book, books);
     }
 
     function loadBooks() {
