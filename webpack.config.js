@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -27,7 +28,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html'
     }),
-    new Dotenv()
+    new Dotenv(),
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/img/favicon_io', to: 'src/img/favicon_io' }
+      ]
+    })
   ],
   devServer: {
     static: {
