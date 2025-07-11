@@ -45,10 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadBooks() {
         const offset = (numeroPagina - 1) * libriPerPagina;
         fetchLibriPerCategoria(categoriaScelta, libriPerPagina, offset).then(books => {
+            if (books.length === 0) {
+                const messaggioErrore = document.getElementById('messaggioErrore');
+                messaggioErrore.textContent = 'Nessun risultato trovato per la ricerca effettuata.';
+                messaggioErrore.style.display = 'block';
+                return;
+            }
+            
+            const messaggioErrore = document.getElementById('messaggioErrore');
+            messaggioErrore.style.display = 'none';
+
             renderLibriConPaginazione(
                 books,
                 clickLibro,
                 numeroPagina,
+                books.length === libriPerPagina
             );
         });
     }
